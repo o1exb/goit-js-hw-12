@@ -124,10 +124,6 @@ p {
   width: 100%;
 }
 
-.hidden {
-  display: none;
-}
-
 .error-message {
   color: red;
   text-align: center;
@@ -136,7 +132,7 @@ p {
 }
 
 .load-more {
-  margin: 0 auto;
+  margin: 20px auto;
   padding: 10px 20px;
   background-color: #007bff;
   color: white;
@@ -144,12 +140,17 @@ p {
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;
-  display: flex;
-  justify-content: center;
+  display: block;
+  text-align: center;
   margin-top: 10px;
   transition: background-color 0.3s ease;
+  width: fit-content;
 }
 
 .load-more:hover {
   background-color: #0056b3;
+}
+
+.hidden {
+  display: none;
 }

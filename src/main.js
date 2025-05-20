@@ -39,26 +39,28 @@ form.addEventListener('submit', async e => {
   showLoader();
 
   try {
-    setTimeout(async () => {
-      const data = await getImagesByQuery(currentQuery, currentPage);
-      totalHits = data.totalHits;
+    const data = await getImagesByQuery(currentQuery, currentPage);
+    totalHits = data.totalHits;
 
-      if (data.hits.length === 0) {
-        iziToast.info({
-          message:
-            'Sorry, there are no images matching your search query. Please try again!',
-        });
-        hideLoader();
-        return;
-      }
+    if (data.hits.length === 0) {
+      iziToast.info({
+        message:
+          'Sorry, there are no images matching your search query. Please try again!',
+      });
+      return;
+    }
+    createGallery(data.hits);
+    const isLastPage = currentPage * perPage >= totalHits;
 
-      createGallery(data.hits);
-      if (totalHits > perPage) {
-        showLoadMoreButton();
-      }
-    }, 1000);
+    if (isLastPage) {
+      hideLoadMoreButton();
+      iziToast.info({
+        message: "We're sorry, but you've reached the end of search results.",
+      });
+    } else {
+      showLoadMoreButton();
+    }
   } catch (error) {
-    console.error('Error fetching images:', error);
     iziToast.error({ message: 'Something went wrong' });
   } finally {
     hideLoader();
@@ -75,7 +77,20 @@ loadMoreBtn.addEventListener('click', async () => {
     const data = await getImagesByQuery(currentQuery, currentPage);
     createGallery(data.hits);
 
-    if (currentPage * perPage >= totalHits) {
+    const galleryItems = document.querySelectorAll('.gallery-item');
+    if (galleryItems.length > 0) {
+      const firstImage = galleryItems[0].querySelector('img');
+      if (firstImage) {
+        const { height } = firstImage.getBoundingClientRect();
+        window.scrollBy({
+          top: height * 2,
+          behavior: 'smooth',
+        });
+      }
+    }
+    const isLastPage = currentPage * perPage >= totalHits;
+
+    if (isLastPage) {
       iziToast.info({
         message: "We're sorry, but you've reached the end of search results.",
       });
@@ -84,7 +99,6 @@ loadMoreBtn.addEventListener('click', async () => {
       showLoadMoreButton();
     }
   } catch (error) {
-    console.error('Error loading more images:', error);
     iziToast.error({
       message: 'Something went wrong while loading more images.',
     });
